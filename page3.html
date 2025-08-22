@@ -191,9 +191,15 @@
     document.getElementById("uid").textContent = generateUID();
 
     document.getElementById("retryBtn").addEventListener("click", function () {
-    window.location.href = "/page1.html";
+      // Get base URL dynamically
+      const origin = window.location.origin; 
+      const pathParts = window.location.pathname.split('/'); 
+      pathParts.pop(); // remove current file 
+      const basePath = pathParts.join('/'); 
+      window.location.href = `${origin}${basePath}/page1.html`;
   });
   </script>
   </body>
+
 
 </html>
