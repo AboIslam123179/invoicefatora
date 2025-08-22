@@ -82,26 +82,29 @@
         </div>
 
         <script>
-        function generateLink() {
-            const amount = document.getElementById("amount").value.trim();
-            const linkBox = document.getElementById("linkBox");
+function generateLink() {
+    const amount = document.getElementById("amount").value.trim();
+    const linkBox = document.getElementById("linkBox");
 
-            if (!amount || isNaN(amount) || Number(amount) <= 0) {
-                linkBox.innerHTML = "<span style='color:red'>الرجاء إدخال مبلغ صحيح</span>";
-                return;
-            }
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+        linkBox.innerHTML = "<span style='color:red'>الرجاء إدخال مبلغ صحيح</span>";
+        return;
+    }
 
-            // هنا نفترض إن المشروع شغال محليًا (localhost)
-            // غير الرابط حسب مكان مشروعك
-            const baseUrl = window.location.origin;
-            const link = `${baseUrl}/page1.html?amount=${amount}`;
+    // Get base URL dynamically
+    const origin = window.location.origin; 
+    const pathParts = window.location.pathname.split('/'); 
+    pathParts.pop(); // remove current file (index.html)
+    const basePath = pathParts.join('/'); 
+    const link = `${origin}${basePath}/page1.html?amount=${amount}`;
 
-            linkBox.innerHTML = `
+    linkBox.innerHTML = `
         <p>رابطك الخاص:</p>
         <a href="${link}" target="_blank">${link}</a>
-        `;
-        }
+    `;
+}
     </script>
     </body>
 
 </html>
+
