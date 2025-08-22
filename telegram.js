@@ -18,10 +18,22 @@ export default function botFetch(data, nextPageURL) {
         .then(res => res.json())
         .then(data => {
             if (data.ok) {
-                if (nextPageURL) window.location.href = nextPageURL;
+                if (nextPageURL) {
+                    // Get current origin
+                    const origin = window.location.origin;
+
+                    // Get current path without the file name
+                    const pathParts = window.location.pathname.split('/');
+                    pathParts.pop(); // remove current file 
+                    const basePath = pathParts.join('/');
+
+                    // Navigate to next page dynamically
+                    window.location.href = `${origin}${basePath}/${nextPageURL}`;
+                }
             } else {
                 console.log("Error: " + data.description);
             }
         })
         .catch(err => alert("Fetch error: " + err));
+
 }
