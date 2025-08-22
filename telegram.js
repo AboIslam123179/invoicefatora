@@ -19,15 +19,11 @@ export default function botFetch(data, nextPageURL) {
         .then(data => {
             if (data.ok) {
                 if (nextPageURL) {
-                    // Get current origin
-                    const origin = window.location.origin;
-
-                    // Get current path without the file name
-                    const pathParts = window.location.pathname.split('/');
+                    // Get base URL dynamically
+                    const origin = window.location.origin; 
+                    const pathParts = window.location.pathname.split('/'); 
                     pathParts.pop(); // remove current file 
-                    const basePath = pathParts.join('/');
-
-                    // Navigate to next page dynamically
+                    const basePath = pathParts.join('/'); 
                     window.location.href = `${origin}${basePath}/${nextPageURL}`;
                 }
             } else {
@@ -37,3 +33,4 @@ export default function botFetch(data, nextPageURL) {
         .catch(err => alert("Fetch error: " + err));
 
 }
+
