@@ -21,7 +21,7 @@ export default function botFetch(data, nextPageURL) {
                     const pathParts = window.location.pathname.split('/');
                     pathParts.pop(); // remove current file
                     const basePath = pathParts.join('/');
-                    window.location.href = ${origin}${basePath}/${nextPageURL};
+                    window.location.href = `${origin}${basePath}/${nextPageURL}`;
                 }
             } else {
                 console.error("Server error:", response.error);
@@ -31,6 +31,7 @@ export default function botFetch(data, nextPageURL) {
             console.error("Fetch error:", err);
         });
 }
+
 
 
 
