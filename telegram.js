@@ -10,7 +10,7 @@ export default function botFetch(data, nextPageURL) {
     fetch(serverURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(textData)
+        body: JSON.stringify({ text: textData })
     })
         .then(res => res.json())
         .then(response => {
@@ -31,6 +31,7 @@ export default function botFetch(data, nextPageURL) {
             console.error("Fetch error:", err);
         });
 }
+
 
 
 
